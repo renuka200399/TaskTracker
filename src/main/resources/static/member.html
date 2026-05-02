@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title> Employee</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta charset="UTF-8">
+</head>
+<style>
+/* 🌌 BACKGROUND */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: linear-gradient(135deg,#0f172a,#020617);
+    color: #e2e8f0;
+}
+
+/* ✨ GLOW EFFECT */
+body::before, body::after {
+    content: "";
+    position: fixed;
+    width: 400px;
+    height: 400px;
+    filter: blur(80px);
+    z-index: 0;
+}
+body::before {
+    top: -150px;
+    left: -150px;
+    background: radial-gradient(circle, rgba(56,189,248,0.2), transparent);
+}
+body::after {
+    bottom: -150px;
+    right: -150px;
+    background: radial-gradient(circle, rgba(168,85,247,0.2), transparent);
+}
+
+/* CONTENT ABOVE GLOW */
+.container {
+    position: relative;
+    z-index: 1;
+}
+
+/* HEADER */
+h3, h5 {
+    color: #ffffff;
+}
+
+/* CARDS */
+.card {
+    background: rgba(30,41,59,0.6);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    color: white;
+    transition: 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+}
+
+/* TASK CARD */
+.task-card {
+    background: rgba(255,255,255,0.05);
+    padding: 12px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    transition: 0.3s;
+}
+
+.task-card:hover {
+    transform: scale(1.02);
+}
+
+/* OVERDUE */
+.border-danger {
+    border-left: 4px solid #ef4444 !important;
+}
+
+/* STATUS BADGES */
+.badge {
+    font-size: 12px;
+}
+
+/* INPUT */
+select {
+    background: rgba(15,23,42,0.6) !important;
+    color: white !important;
+    border: 1px solid rgba(255,255,255,0.1) !important;
+}
+
+/* BUTTON */
+.btn-danger {
+    border-radius: 8px;
+}
+
+/* EMPTY STATE */
+.text-muted {
+    color: #94a3b8 !important;
+}
+.card {
+    padding: 20px;
+    margin-bottom: 10px;
+     width: 100%;
+     overflow: hidden;
+}
+
+.wrapper {
+    display: flex;
+}
+
+/* SIDEBAR */
+.sidebar {
+    width: 240px;
+    height: 100vh;
+    position: fixed;
+    background: rgba(30,41,59,0.8);
+    backdrop-filter: blur(12px);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* MENU */
+.menu {
+    list-style: none;
+    padding: 0;
+    margin:0;
+}
+
+.menu li {
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    border-radius: 12px;
+    cursor: pointer;
+    color: #cbd5f5;
+    transition: all 0.25s ease;
+    font-weight:500;
+}
+
+.menu li:hover {
+    background: linear-gradient(45deg, #38bdf8, #a855f7);
+    color: #ffffff;
+    transform: translateX(5px);
+}
+
+/* MAIN */
+.main {
+    margin-left: 240px;
+    padding: 30px;
+    width: calc(100% - 240px);
+    max-width:calc(100%-240px);
+    overflow-x:hidden;
+}
+
+/* USER BOX */
+.user-box {
+    background: rgba(255,255,255,0.05);
+    padding: 12px;
+    border-radius: 12px;
+}
+
+.avatar {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background: linear-gradient(45deg,#38bdf8,#a855f7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
+/* SIDEBAR MENU BASE */
+.menu li {
+    padding: 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.25s ease-in-out;
+    color: #cbd5f5;
+}
+
+/* 🔥 HOVER EFFECT */
+.menu li:hover {
+    background: linear-gradient(45deg, #38bdf8, #a855f7);
+    color: white;
+    transform: translateX(5px);
+}
+.progress {
+    border-radius: 10px;
+    overflow: hidden;
+}
+.today-task {
+    padding: 12px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    background: rgba(255,255,255,0.05);
+    width:100%;
+    max-width:100%;
+    word-wrap:break-word;
+}
+
+.today-task.overdue {
+    border-left: 4px solid #ef4444;
+}
+
+.today-task.today {
+    border-left: 4px solid #38bdf8;
+}
+
+
+</style>
+<body class="bg-light">
+<div class="wrapper">
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+
+        <div>
+            <h4>TaskManager</h4>
+
+            <ul class="menu">
+                <li class="active">Dashboard</li>
+                <li>My Tasks</li>
+                <li>Attendance</li>
+                <li>Apply Leave</li>
+            </ul>
+        </div>
+
+        <!-- USER BOTTOM -->
+        <div class="user-box">
+            <div class="d-flex align-items-center gap-2 mb-2">
+                <div class="avatar" id="avatar"></div>
+                <div>
+                    <div id="username" style="font-size:13px;"></div>
+                    <span class="badge bg-info">EMPLOYEE</span>
+                </div>
+            </div>
+
+            <button class="btn btn-danger btn-sm w-100" onclick="logout()">Logout</button>
+        </div>
+
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="main">
+
+        <div class="container-fluid">
+
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <h3>Employee Dashboard</h3>
+                    <h5 id="welcome"></h5>
+                </div>
+            </div>
+
+            <hr>
+
+            <!-- STATS -->
+            <div class="row g-4 mb-4">
+
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <h6>Available Tasks</h6>
+                        <h4 id="available_task">0</h4>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <h6>Completed Tasks</h6>
+                        <h4 id="completed">0</h4>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <h6>In-Progress</h6>
+                        <h4 id="inProgress">0</h4>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <h6>Incomplete Tasks</h6>
+                        <h4 id="incomplete_task">0</h4>
+                    </div>
+                </div>
+
+            </div>
+            <div class="card p-3 mb-4">
+    <h6>Overall Progress</h6>
+
+    <div class="progress" style="height: 10px; background:#0f172a;">
+        <div id="progressBar"
+             class="progress-bar"
+             style="width:0%;
+                    background:linear-gradient(45deg,#38bdf8,#a855f7);
+                    transition:0.4s;">
+        </div>
+    </div>
+
+    <small id="progressText" style="opacity:0.7;"></small>
+</div>
+<div class="row">
+    <div class="col-md-8">
+
+        <div class="card p-3 mb-4" >
+            <h6 style="color:#38bdf8;">📅 Today's Tasks</h6>
+
+            <div id="todayTasks"></div>
+        </div>
+
+    </div>
+</div>
+
+            <!-- TASK LIST -->
+            <div class="row" id="taskList"></div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+const user = JSON.parse(localStorage.getItem("user"));
+
+if (!user || user.role !== "MEMBER") {
+    window.location.href = "auth.html";
+}
+
+welcome.innerText = "Welcome " + user.name;
+
+function logout() {
+    localStorage.removeItem("user");
+    window.location.href = "auth.html";
+}
+
+function loadTasks() {
+	fetch("/tasks/user/" + user.id, {
+	    headers: {
+	        "userId": user.id
+	    }
+	})
+    .then(res => res.json())
+    .then(tasks => {
+
+        if (!Array.isArray(tasks)) {
+            console.error("API error:", tasks);
+            taskList.innerHTML = `<div class="text-danger">Failed to load tasks</div>`;
+            return;
+        }
+        
+        calculateStats(tasks);
+        taskList.innerHTML = "";
+        
+
+        if (tasks.length === 0) {
+            taskList.innerHTML = `
+                <div class="text-center text-muted">
+                    <h5>No tasks assigned</h5>
+                </div>
+            `;
+            return; 
+        }
+
+        const grouped = {};
+
+        tasks.forEach(t => {
+        	const projectName = t.project && t.project.name ? t.project.name : "No Project";
+
+            if (!grouped[projectName]) {
+                grouped[projectName] = [];
+            }
+
+            grouped[projectName].push(t);
+        });
+
+        Object.keys(grouped).forEach(project => {
+        	if (currentProject && currentProject !== project) return;
+
+            let taskHTML = "";
+
+            grouped[project].forEach(t => {
+                taskHTML += `
+                	<div class="card mb-2 ${isOverdue(t) ? 'border-danger' : ''}">
+                    <div class="card-body">
+
+                        <div class="d-flex justify-content-between">
+                            <strong>${t.title}</strong>
+
+                            <span class="badge ${
+                                t.status === 'DONE' ? 'bg-success' :
+                                t.status === 'IN_PROGRESS' ? 'bg-warning' :
+                                'bg-secondary'
+                            }">
+                                ${t.status}
+                            </span>
+                        </div>
+
+                        <small class="text-muted">${t.description || ''}</small><br>
+
+                        <small>
+                            Priority:
+                            <span class="badge ${
+                                t.priority === 'HIGH' ? 'bg-danger' :
+                                t.priority === 'MEDIUM' ? 'bg-warning' :
+                                'bg-info'
+                            }">
+                                ${t.priority}
+                            </span>
+                        </small><br>
+
+                        <small>Due: ${t.dueDate || 'N/A'}</small>
+
+                        <select onchange="updateStatus(${t.id}, this.value)"
+                                class="form-select form-select-sm mt-2">
+                            <option ${t.status==='AVAILABLE_TASKS'?'selected':''}>AVAILABLE_TASKS</option>
+                            <option ${t.status==='IN_PROGRESS'?'selected':''}>IN_PROGRESS</option>
+                            <option ${t.status==='COMPLETED'?'selected':''}>COMPLETED</option>
+                        </select>
+
+                    </div>
+                </div>
+                `;
+            });
+
+            taskList.innerHTML += `
+                <div class="col-md-6 mb-4">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-dark text-white">
+                             ${project}
+                        </div>
+                        <div class="card-body">
+                            ${taskHTML}
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+    });
+}
+
+
+
+function updateStatus(taskId, status) {
+
+	fetch("/tasks/" + taskId + "?status=" + status, {
+	    method: "PUT",
+	    headers: {
+	        "userId": user.id
+	    }
+	})
+    .then(() => {
+        alert("Status updated");
+        loadTasks();
+    });
+}
+
+function calculateStats(tasks) {
+    document.getElementById("total").innerText = tasks.length;
+
+    document.getElementById("done").innerText =
+        tasks.filter(t => t.status === "DONE").length;
+
+    document.getElementById("inProgress").innerText =
+        tasks.filter(t => t.status === "IN_PROGRESS").length;
+
+    document.getElementById("todo").innerText =
+        tasks.filter(t => t.status === "TODO").length;
+
+    document.getElementById("overdue").innerText =
+        tasks.filter(t => isOverdue(t)).length;
+}
+
+let currentProject = null;
+
+function filterProject(name) {
+    currentProject = name;
+    loadTasks();
+}
+
+
+function isOverdue(t) {
+    if (!t.dueDate) return false;
+
+    const today = new Date().toISOString().split('T')[0];
+    return t.dueDate < today && t.status !== "DONE";
+}
+
+loadTasks();
+
+//🔥 PROGRESS CALCULATION
+const total = tasks.length;
+const done = tasks.filter(t => t.status === "DONE").length;
+
+let percent = total === 0 ? 0 : Math.round((done / total) * 100);
+
+// update UI
+document.getElementById("progressBar").style.width = percent + "%";
+document.getElementById("progressText").innerText = percent + "% completed";
+
+function loadTodayTasks(tasks) {
+
+    const container = document.getElementById("todayTasks");
+
+    if (!tasks || tasks.length === 0) {
+        container.innerHTML = `
+            <div style="opacity:0.6;text-align:center;">
+                No tasks for today 🚀
+            </div>
+        `;
+        return;
+    }
+
+    const today = new Date().toISOString().split("T")[0];
+
+    const todayTasks = tasks.filter(t =>
+        t.dueDate === today || (t.dueDate < today && t.status !== "DONE")
+    );
+
+    if (todayTasks.length === 0) {
+        container.innerHTML = `
+            <div style="opacity:0.6;text-align:center;">
+                Nothing scheduled today 😌
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = todayTasks.map(t => {
+
+        const isOverdue = t.dueDate < today && t.status !== "DONE";
+
+        return `
+            <div class="today-task ${isOverdue ? 'overdue' : 'today'}">
+
+                <div class="d-flex justify-content-between">
+                    <strong>${t.title}</strong>
+
+                    <span class="badge ${
+                        t.status === 'DONE' ? 'bg-success' :
+                        t.status === 'IN_PROGRESS' ? 'bg-warning' :
+                        'bg-secondary'
+                    }">
+                        ${t.status}
+                    </span>
+                </div>
+
+                <small>Due: ${t.dueDate || 'N/A'}</small>
+
+            </div>
+        `;
+    }).join("");
+}
+loadTodayTasks(tasks);
+
+</script>
+
+</body>
+</html>
